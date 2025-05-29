@@ -1,10 +1,11 @@
-name: ESP32 Build & Unit Tests
+name: ESP32 Build & Unit Tests (Manual ESP-IDF Setup)
 
 on:
   push:
     branches: [main]
   pull_request:
-  workflow_dispatch:  # 👈 allows running from UI
+    branches: [main]
+  workflow_dispatch:
 
 jobs:
   build-and-test:
@@ -19,18 +20,30 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: 🧰 Set up ESP-IDF
-        uses: espressif/setup-idf@v1
-        with:
-          version: v5.2
+      - name: 📦 Install System Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y git wget flex bison gperf python3-pip cmake ninja-build ccache libffi-dev libssl-dev dfu-util libusb-1.0-0
+
+      - name: 📥 Clone ESP-IDF
+        run: |
+          git clone --recursive https://github.com/espressif/esp-idf.git
+          cd esp-idf
+          git checkout v5.2  # Or whichever version you use
+        working-directory: ${{ github.workspace }}
+
+      - name: 🛠 Install ESP-IDF Tools
+        run: |
+          cd esp-idf
+          ./install.sh
 
       - name: 🔨 Build ESP32 Firmware
         run: |
-          . $IDF_PATH/export.sh
+          source $GITHUB_WORKSPACE/esp-idf/export.sh
           idf.py set-target esp32
           idf.py build
 
-      # - name: 🧪 Run Unit Tests on Host
+      # - name: 🧪 Run Host Unit Tests
       #   run: |
       #     gcc -Iunity \
       #         -Icomponents/my_component/include \
