@@ -27,9 +27,10 @@ jobs:
 
       - name: 📥 Clone ESP-IDF
         run: |
-          git clone --recursive https://github.com/espressif/esp-idf.git
+          git clone https://github.com/espressif/esp-idf.git
           cd esp-idf
           git checkout v5.2  # Or whichever version you use
+          git submodule update --init --recursive  # ← THIS is essential
         working-directory: ${{ github.workspace }}
 
       - name: 🛠 Install ESP-IDF Tools
