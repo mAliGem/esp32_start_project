@@ -29,6 +29,7 @@ static led_strip_handle_t led_strip;
 
 static void blink_led(void)
 {
+    ESP_LOGI(TAG,"Blink LED Function");
     /* If the addressable LED is enabled */
     if (s_led_state) {
         /* Set the LED pixel using RGB from 0 (0%) to 255 (100%) for each color */
