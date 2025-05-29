@@ -1,0 +1,30 @@
+name: ESP32 Build & Unit Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: 🐍 Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: 🧰 Set up ESP-IDF
+        uses: espressif/setup-idf@v1
+        with:
+          version: v5.2  # adjust as needed
+
+      - name: 🔨 Build ESP32 Firmware
+        run: |
+          . $IDF_PATH/export.sh
+          idf.py set-target esp32
+          idf.py build
