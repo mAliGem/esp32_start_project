@@ -15,42 +15,12 @@ jobs:
       - name: 📥 Checkout Repository
         uses: actions/checkout@v3
 
-      - name: 🐍 Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
-
-      - name: 📦 Install System Dependencies
+      - name: Data to header file conversion
         run: |
-          sudo apt-get update
-          sudo apt-get install -y git wget flex bison gperf python3-pip cmake ninja-build ccache libffi-dev libssl-dev dfu-util libusb-1.0-0
-
-      - name: 📥 Clone ESP-IDF
-        run: |
-          git clone https://github.com/espressif/esp-idf.git
-          cd esp-idf
-          git checkout v5.2  # Or whichever version you use
-          git submodule update --init --recursive  # ← THIS is essential
-        working-directory: ${{ github.workspace }}
-
-      - name: 🛠 Install ESP-IDF Tools
-        run: |
-          cd esp-idf
-          ./install.sh
-
-      - name: 🔨 Build ESP32 Firmware
-        run: |
-          source $GITHUB_WORKSPACE/esp-idf/export.sh
-          idf.py set-target esp32
-          idf.py build
-
-      # - name: 🧪 Run Host Unit Tests
-      #   run: |
-      #     gcc -Iunity \
-      #         -Icomponents/my_component/include \
-      #         -Itests \
-      #         tests/test_my_code.c \
-      #         unity/unity.c \
-      #         -o test_runner
-
-      #     ./test_runner
+          python data2h.py data/index.html main/indexhtml.h
+          python data2h.py data/material-design-icons.ttf main/fontttf.h
+          python data2h.py data/material-design-icons.woff main/fontwoff.h
+          python data2h.py data/material-design-icons.svg main/fontsvg.h
+          python data2h.py data/material-design-icons.eot main/fonteot.h
+          python data2h.py data/cert.pem main/certpem.h
+          python data2h.py data/key.pem main/keypem.h
